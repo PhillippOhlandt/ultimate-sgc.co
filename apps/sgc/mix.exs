@@ -38,7 +38,8 @@ defmodule SGC.Mixfile do
     [
       {:postgrex, ">= 0.0.0"},
       {:ecto, "~> 2.1"},
-      {:httpoison, "~> 0.13"}
+      {:httpoison, "~> 0.13"},
+      {:floki, "~> 0.18.0"}
     ]
   end
 

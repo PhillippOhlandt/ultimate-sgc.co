@@ -1,5 +1,6 @@
 defmodule SGC.StargateCommand.Response do
-  defstruct body: nil,
+  defstruct status_code: nil,
+            body: nil,
             headers: [],
             cookies: []
 
