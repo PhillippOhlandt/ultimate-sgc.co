@@ -1,0 +1,16 @@
+# temporary development solution
+version: '2'
+services:
+  postgres:
+    image: sameersbn/postgresql:latest
+    container_name: sgc-postgres
+    ports:
+      - "5436:5432"
+    volumes:
+        - ./_postgres-data:/var/lib/postgresql
+    environment:
+        - DB_USER=sgc
+        - DB_PASS=secret
+        - DB_NAME=sgc_dev
+        - PG_DATADIR=/var/lib/postgresql
+    restart: always
