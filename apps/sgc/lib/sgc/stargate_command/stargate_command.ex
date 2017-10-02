@@ -49,13 +49,18 @@ defmodule SGC.StargateCommand do
 
     form = ["user[user_name]": username, "user[password]": password, "utf8": "✓", "authenticity_token": csrf_token]
 
-    %Response{cookies: new_cookies, status_code: status_code} = post("https://www.stargatecommand.co/login", {:form, form}, [], cookies)
+    %Response{body: body, cookies: new_cookies, status_code: status_code} = post(
+      "https://www.stargatecommand.co/login",
+      {:form, form},
+      [{"Accept", "application/json"}],
+      cookies
+    )
 
     new_cookies = Cookie.merge_lists(cookies, new_cookies)
 
     case status_code do
-      302 -> {:ok, new_cookies}
-      _ -> :error
+      200 -> {:ok, new_cookies}
+      _ -> {:error, body}
     end
   end
 end
