@@ -1,6 +1,7 @@
 defmodule SGC.StargateCommand do
   alias SGC.StargateCommand.Response
   alias SGC.Cookie
+  alias SGC.StargateCommand.Scraper.Profile
 
   def get(url, headers \\ [], cookies \\ nil) do
     request(:get, url, nil, headers, cookies)
@@ -21,6 +22,8 @@ defmodule SGC.StargateCommand do
           |> Enum.join("; ")
         [hackney: [cookie: [cookies_formatted]]]
     end
+
+    headers = [{"User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36"} | headers]
 
     %HTTPoison.Response{body: body, headers: headers, status_code: status_code} = case method do
       :get -> HTTPoison.get!(url, headers, options)
@@ -72,4 +75,43 @@ defmodule SGC.StargateCommand do
       _ -> {:error, body}
     end
   end
+
+  def user_info(cookies) do
+    cookies = cookies |> filter_cookies()
+
+    %Response{body: body, cookies: home_cookies} = get("https://www.stargatecommand.co/home", [], cookies)
+
+    profile_url = Floki.find(body, ".user-level") |> Floki.attribute("href") |> List.first()
+
+    case profile_url do
+      "" -> {:error, :unauthenticated}
+      url -> user_info(url, home_cookies)
+    end
+  end
+  def user_info("/profile/" <> id, cookies) do
+    cookies = cookies |> filter_cookies()
+
+    %Response{status_code: status_code, body: body, cookies: profile_cookies} = get("https://www.stargatecommand.co/profile/#{id}", [], cookies)
+
+    case status_code do
+      200 ->
+        data = %{
+          user_id: id,
+          username: Profile.username(body),
+          profile_pic: Profile.profile_pic(body),
+          level: Profile.level(body),
+          lifetime_command_coins: Profile.lifetime_command_coins(body),
+          command_coins_available: Profile.command_coins_available(body),
+          posts_count: Profile.posts_count(body),
+          following_count: Profile.following_count(body),
+          followers_count: Profile.followers_count(body)
+        }
+
+        new_cookies = Cookie.merge_lists(cookies, profile_cookies)
+
+        {:ok, data, new_cookies}
+      _ -> {:error, :unauthenticated}
+    end
+  end
+  def user_info(id, cookies), do: user_info("/profile/#{id}", cookies)
 end
