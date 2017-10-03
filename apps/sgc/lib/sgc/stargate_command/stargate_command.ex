@@ -16,6 +16,7 @@ defmodule SGC.StargateCommand do
       cookies ->
         cookies_formatted =
           cookies
+          |> filter_cookies()
           |> Enum.map(&Cookie.format/1)
           |> Enum.join("; ")
         [hackney: [cookie: [cookies_formatted]]]
@@ -41,6 +42,14 @@ defmodule SGC.StargateCommand do
       cookies: response_cookies
     }
   end
+
+  def filter_cookies(cookies) do
+    cookies
+    |> Enum.filter(&cookie_allowed?/1)
+  end
+
+  defp cookie_allowed?(%Cookie{name: name}) when name in ["_TopFan-BCK_session", "session_id", "guest_user_id"], do: true
+  defp cookie_allowed?(_), do: false
 
   def login(username, password) do
     %Response{body: body, cookies: cookies} = get("https://www.stargatecommand.co/home")
