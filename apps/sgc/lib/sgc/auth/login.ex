@@ -10,6 +10,7 @@ defmodule SGC.Auth.Login do
   def changeset(struct, attrs) do
     struct
     |> cast(attrs, [:username, :password])
+    |> validate_required([:username, :password])
     |> validate_length(:username, min: 3)
     |> validate_length(:password, min: 4, max: 25)
   end

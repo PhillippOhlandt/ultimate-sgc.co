@@ -22,6 +22,7 @@ defmodule SGCWeb do
       use Phoenix.Controller, namespace: SGCWeb
       import Plug.Conn
       import SGCWeb.Router.Helpers
+      import SGCWeb.Controllers.Helpers
       import SGCWeb.Gettext
     end
   end
