@@ -36,7 +36,7 @@ defmodule SGCWeb.Endpoint do
   plug Plug.Session,
     store: :cookie,
     key: "_sgc_web_key",
-    signing_salt: "52Uz+aCd"
+    signing_salt: System.get_env("COOKIE_SIGNING_SALT") || "52Uz+aCd"
 
   plug SGCWeb.Router
 
