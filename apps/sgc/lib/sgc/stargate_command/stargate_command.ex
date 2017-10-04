@@ -99,6 +99,7 @@ defmodule SGC.StargateCommand do
           user_id: id,
           username: Profile.username(body),
           profile_pic: Profile.profile_pic(body),
+          header_pic: Profile.header_pic(body),
           level: Profile.level(body),
           lifetime_command_coins: Profile.lifetime_command_coins(body),
           command_coins_available: Profile.command_coins_available(body),

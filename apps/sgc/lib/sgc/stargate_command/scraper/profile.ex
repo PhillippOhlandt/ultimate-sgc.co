@@ -18,6 +18,18 @@ defmodule SGC.StargateCommand.Scraper.Profile do
     |> String.trim()
   end
 
+  def header_pic(body) do
+    style =
+      body
+      |> Floki.find(".profile-label.banner-area")
+      |> Floki.attribute("style")
+      |> List.first()
+
+    # regex found on https://stackoverflow.com/a/9724277/3877081
+    Regex.run(~r/url\(\s*(['"]?)(.*?)\1\s*\)/, style)
+    |> List.last()
+  end
+
   def level(body) do
     body
     |> Floki.find(".banner-area .profile-pic .status .set")
