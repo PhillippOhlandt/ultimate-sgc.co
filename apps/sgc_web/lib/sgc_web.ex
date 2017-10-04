@@ -41,6 +41,7 @@ defmodule SGCWeb do
       import SGCWeb.Router.Helpers
       import SGCWeb.ErrorHelpers
       import SGCWeb.Gettext
+      import SGCWeb.Session
     end
   end
 
