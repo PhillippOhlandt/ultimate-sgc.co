@@ -30,6 +30,16 @@ defmodule SGC.StargateCommand.Scraper.Profile do
     |> List.last()
   end
 
+  def all_access?(body) do
+    body
+    |> Floki.find(".banner-area .profile-pic .status .set")
+    |> List.first()
+    |> Floki.find("h2")
+    |> Floki.text()
+    |> String.trim()
+    |> String.contains?("All-Access")
+  end
+
   def level(body) do
     body
     |> Floki.find(".banner-area .profile-pic .status .set")
