@@ -112,6 +112,7 @@ defmodule SGC.StargateCommand do
         new_cookies = Cookie.merge_lists(cookies, profile_cookies)
 
         {:ok, data, new_cookies}
+      404 -> {:error, :not_found}
       _ -> {:error, :unauthenticated}
     end
   end
