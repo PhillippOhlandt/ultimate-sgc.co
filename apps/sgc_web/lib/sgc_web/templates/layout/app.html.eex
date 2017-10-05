@@ -13,18 +13,18 @@
 
   <body>
     <div class="container">
-      <header class="header">
+      <header class="header clearfix">
         <nav role="navigation">
           <ul class="nav nav-pills pull-right">
             <%= if logged_in?(@conn) do %>
-              <li><%= current_user(@conn).username %></li>
+              <li><%= link current_user(@conn).username, to: user_path(@conn, :show, @user.user_id) %></li>
               <li><%= link "Logout", to: session_path(@conn, :delete) %></li>
             <% else %>
               <li><%= link "Login", to: session_path(@conn, :new) %></li>
             <% end %>
           </ul>
         </nav>
-        <span>SGC</span>
+        <h3 class="text-muted">SGC</h3>
       </header>
 
       <p class="alert alert-info" role="alert"><%= get_flash(@conn, :info) %></p>
