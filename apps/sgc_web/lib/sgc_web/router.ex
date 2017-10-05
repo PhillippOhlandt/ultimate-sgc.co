@@ -39,6 +39,8 @@ defmodule SGCWeb.Router do
     pipe_through [:browser, :user_required]
 
     get "/logout", SessionController, :delete
+
+    get "/profile/:id", UserController, :show
   end
 
   # Other scopes may use custom stacks.
