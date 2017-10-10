@@ -40,7 +40,10 @@ defmodule SGCWeb.Router do
 
     get "/logout", SessionController, :delete
 
-    get "/profile/:id", UserController, :show
+    scope "/profile/:id" do
+      get "/", UserController, :show
+      get "/posts", UserController, :posts
+    end
   end
 
   # Other scopes may use custom stacks.
