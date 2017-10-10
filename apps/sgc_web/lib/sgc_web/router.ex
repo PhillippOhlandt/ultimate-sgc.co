@@ -46,6 +46,16 @@ defmodule SGCWeb.Router do
       get "/following", UserController, :following
       get "/followers", UserController, :followers
     end
+
+    scope "/api", Api do
+      pipe_through [:api]
+
+      scope "/notifications" do
+        get "/", NotificationController, :index
+        get "/:id/mark_read", NotificationController, :mark_read
+        get "/mark_all_read", NotificationController, :mark_all_read
+      end
+    end
   end
 
   # Other scopes may use custom stacks.

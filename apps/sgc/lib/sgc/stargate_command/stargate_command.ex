@@ -121,7 +121,7 @@ defmodule SGC.StargateCommand do
   def user_posts(id, cookies, page \\ 1) do
     cookies = cookies |> filter_cookies()
 
-    %Response{status_code: status_code, body: body, cookies: posts_cookies} = get(
+    %Response{status_code: status_code, body: body, cookies: new_cookies} = get(
       "https://www.stargatecommand.co/profile/#{id}?page=#{page}",
       [
         {"Accept", "application/json, text/javascript, */*; q=0.01"},
@@ -132,7 +132,7 @@ defmodule SGC.StargateCommand do
 
     case status_code do
       200 ->
-        new_cookies = Cookie.merge_lists(cookies, posts_cookies)
+        new_cookies = Cookie.merge_lists(cookies, new_cookies)
 
         {:ok, Poison.decode!(body), new_cookies}
       404 -> {:error, :not_found}
@@ -143,7 +143,7 @@ defmodule SGC.StargateCommand do
   def user_following(id, cookies, page \\ 1) do
     cookies = cookies |> filter_cookies()
 
-    %Response{status_code: status_code, body: body, cookies: posts_cookies} = get(
+    %Response{status_code: status_code, body: body, cookies: new_cookies} = get(
       "https://www.stargatecommand.co/profile/#{id}/following?page=#{page}",
       [
         {"Accept", "application/json, text/javascript, */*; q=0.01"},
@@ -154,7 +154,7 @@ defmodule SGC.StargateCommand do
 
     case status_code do
       200 ->
-        new_cookies = Cookie.merge_lists(cookies, posts_cookies)
+        new_cookies = Cookie.merge_lists(cookies, new_cookies)
 
         {:ok, Poison.decode!(body), new_cookies}
       404 -> {:error, :not_found}
@@ -165,7 +165,7 @@ defmodule SGC.StargateCommand do
   def user_followers(id, cookies, page \\ 1) do
     cookies = cookies |> filter_cookies()
 
-    %Response{status_code: status_code, body: body, cookies: posts_cookies} = get(
+    %Response{status_code: status_code, body: body, cookies: new_cookies} = get(
       "https://www.stargatecommand.co/profile/#{id}/followers?page=#{page}",
       [
         {"Accept", "application/json, text/javascript, */*; q=0.01"},
@@ -176,9 +176,75 @@ defmodule SGC.StargateCommand do
 
     case status_code do
       200 ->
-        new_cookies = Cookie.merge_lists(cookies, posts_cookies)
+        new_cookies = Cookie.merge_lists(cookies, new_cookies)
 
         {:ok, Poison.decode!(body), new_cookies}
+      404 -> {:error, :not_found}
+      _ -> {:error, :unauthenticated}
+    end
+  end
+
+  def user_notifications(cookies, page \\ 1) do
+    cookies = cookies |> filter_cookies()
+
+    %Response{status_code: status_code, body: body, cookies: new_cookies} = get(
+      "https://www.stargatecommand.co/notifications?page=#{page}",
+      [
+        {"Accept", "application/json, text/javascript, */*; q=0.01"},
+        {"X-Requested-With", "XMLHttpRequest"}
+      ],
+      cookies
+    )
+
+    case status_code do
+      200 ->
+        new_cookies = Cookie.merge_lists(cookies, new_cookies)
+
+        {:ok, Poison.decode!(body), new_cookies}
+      404 -> {:error, :not_found}
+      _ -> {:error, :unauthenticated}
+    end
+  end
+
+  def mark_user_notification_as_read(cookies, id) do
+    cookies = cookies |> filter_cookies()
+
+    %Response{status_code: status_code, cookies: new_cookies} = get(
+      "https://www.stargatecommand.co/notifications/mark_read?id=#{id}",
+      [
+        {"Accept", "application/json, text/javascript, */*; q=0.01"},
+        {"X-Requested-With", "XMLHttpRequest"}
+      ],
+      cookies
+    )
+
+    case status_code do
+      201 ->
+        new_cookies = Cookie.merge_lists(cookies, new_cookies)
+
+        {:ok, new_cookies}
+      404 -> {:error, :not_found}
+      _ -> {:error, :unauthenticated}
+    end
+  end
+
+  def mark_all_user_notifications_as_read(cookies) do
+    cookies = cookies |> filter_cookies()
+
+    %Response{status_code: status_code, cookies: new_cookies} = get(
+      "https://www.stargatecommand.co/notifications/mark_all_read",
+      [
+        {"Accept", "application/json, text/javascript, */*; q=0.01"},
+        {"X-Requested-With", "XMLHttpRequest"}
+      ],
+      cookies
+    )
+
+    case status_code do
+      200 ->
+        new_cookies = Cookie.merge_lists(cookies, new_cookies)
+
+        {:ok, new_cookies}
       404 -> {:error, :not_found}
       _ -> {:error, :unauthenticated}
     end
