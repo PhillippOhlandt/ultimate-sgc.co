@@ -8,4 +8,8 @@ defmodule SGCWeb.Api.NotificationView do
   def render("mark_read.json", _) do
     %{}
   end
+
+  def render("mark_all_read.json", _) do
+    %{}
+  end
 end

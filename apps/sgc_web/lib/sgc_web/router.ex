@@ -53,6 +53,7 @@ defmodule SGCWeb.Router do
       scope "/notifications" do
         get "/", NotificationController, :index
         get "/:id/mark_read", NotificationController, :mark_read
+        get "/mark_all_read", NotificationController, :mark_all_read
       end
     end
   end

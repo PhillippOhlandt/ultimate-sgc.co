@@ -22,4 +22,14 @@ defmodule SGCWeb.Api.NotificationController do
       |> render("mark_read.json")
     end
   end
+
+  def mark_all_read(conn, _) do
+    cookies = create_cookie_list(conn)
+
+    with {:ok, new_cookies} <- StargateCommand.mark_all_user_notifications_as_read(cookies) do
+      conn
+      |> add_cookies(new_cookies)
+      |> render("mark_all_read.json")
+    end
+  end
 end
