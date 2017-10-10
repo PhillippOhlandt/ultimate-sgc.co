@@ -43,6 +43,7 @@ defmodule SGCWeb.Router do
     scope "/profile/:id" do
       get "/", UserController, :show
       get "/posts", UserController, :posts
+      get "/following", UserController, :following
     end
   end
 
