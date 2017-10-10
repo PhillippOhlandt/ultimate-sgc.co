@@ -205,4 +205,26 @@ defmodule SGC.StargateCommand do
       _ -> {:error, :unauthenticated}
     end
   end
+
+  def mark_user_notification_as_read(cookies, id) do
+    cookies = cookies |> filter_cookies()
+
+    %Response{status_code: status_code, cookies: new_cookies} = get(
+      "https://www.stargatecommand.co/notifications/mark_read?id=#{id}",
+      [
+        {"Accept", "application/json, text/javascript, */*; q=0.01"},
+        {"X-Requested-With", "XMLHttpRequest"}
+      ],
+      cookies
+    )
+
+    case status_code do
+      201 ->
+        new_cookies = Cookie.merge_lists(cookies, new_cookies)
+
+        {:ok, new_cookies}
+      404 -> {:error, :not_found}
+      _ -> {:error, :unauthenticated}
+    end
+  end
 end
