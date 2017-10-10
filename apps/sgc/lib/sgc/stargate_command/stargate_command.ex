@@ -117,4 +117,70 @@ defmodule SGC.StargateCommand do
     end
   end
   def user_info(id, cookies), do: user_info("/profile/#{id}", cookies)
+
+  def user_posts(id, cookies, page \\ 1) do
+    cookies = cookies |> filter_cookies()
+
+    %Response{status_code: status_code, body: body, cookies: posts_cookies} = get(
+      "https://www.stargatecommand.co/profile/#{id}?page=#{page}",
+      [
+        {"Accept", "application/json, text/javascript, */*; q=0.01"},
+        {"X-Requested-With", "XMLHttpRequest"}
+      ],
+      cookies
+    )
+
+    case status_code do
+      200 ->
+        new_cookies = Cookie.merge_lists(cookies, posts_cookies)
+
+        {:ok, Poison.decode!(body), new_cookies}
+      404 -> {:error, :not_found}
+       _ -> {:error, :unauthenticated}
+    end
+  end
+
+  def user_following(id, cookies, page \\ 1) do
+    cookies = cookies |> filter_cookies()
+
+    %Response{status_code: status_code, body: body, cookies: posts_cookies} = get(
+      "https://www.stargatecommand.co/profile/#{id}/following?page=#{page}",
+      [
+        {"Accept", "application/json, text/javascript, */*; q=0.01"},
+        {"X-Requested-With", "XMLHttpRequest"}
+      ],
+      cookies
+    )
+
+    case status_code do
+      200 ->
+        new_cookies = Cookie.merge_lists(cookies, posts_cookies)
+
+        {:ok, Poison.decode!(body), new_cookies}
+      404 -> {:error, :not_found}
+      _ -> {:error, :unauthenticated}
+    end
+  end
+
+  def user_followers(id, cookies, page \\ 1) do
+    cookies = cookies |> filter_cookies()
+
+    %Response{status_code: status_code, body: body, cookies: posts_cookies} = get(
+      "https://www.stargatecommand.co/profile/#{id}/followers?page=#{page}",
+      [
+        {"Accept", "application/json, text/javascript, */*; q=0.01"},
+        {"X-Requested-With", "XMLHttpRequest"}
+      ],
+      cookies
+    )
+
+    case status_code do
+      200 ->
+        new_cookies = Cookie.merge_lists(cookies, posts_cookies)
+
+        {:ok, Poison.decode!(body), new_cookies}
+      404 -> {:error, :not_found}
+      _ -> {:error, :unauthenticated}
+    end
+  end
 end
