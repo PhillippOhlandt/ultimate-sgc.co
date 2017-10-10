@@ -44,6 +44,7 @@ defmodule SGCWeb.Router do
       get "/", UserController, :show
       get "/posts", UserController, :posts
       get "/following", UserController, :following
+      get "/followers", UserController, :followers
     end
   end
 

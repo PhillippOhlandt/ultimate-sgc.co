@@ -4,4 +4,8 @@ defmodule SGCWeb.UserView do
   def render("following.json", %{data: data}) do
     data
   end
+
+  def render("followers.json", %{data: data}) do
+    data
+  end
 end
