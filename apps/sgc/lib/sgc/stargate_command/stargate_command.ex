@@ -46,6 +46,19 @@ defmodule SGC.StargateCommand do
     }
   end
 
+  def simple_api_get(url, cookies) do
+    cookies = cookies |> filter_cookies()
+
+    get(
+      url,
+      [
+        {"Accept", "application/json, text/javascript, */*; q=0.01"},
+        {"X-Requested-With", "XMLHttpRequest"}
+      ],
+      cookies
+    )
+  end
+
   def filter_cookies(cookies) do
     cookies
     |> Enum.filter(&cookie_allowed?/1)
@@ -119,15 +132,8 @@ defmodule SGC.StargateCommand do
   def user_info(id, cookies), do: user_info("/profile/#{id}", cookies)
 
   def user_posts(id, cookies, page \\ 1) do
-    cookies = cookies |> filter_cookies()
-
-    %Response{status_code: status_code, body: body, cookies: new_cookies} = get(
-      "https://www.stargatecommand.co/profile/#{id}?page=#{page}",
-      [
-        {"Accept", "application/json, text/javascript, */*; q=0.01"},
-        {"X-Requested-With", "XMLHttpRequest"}
-      ],
-      cookies
+    %Response{status_code: status_code, body: body, cookies: new_cookies} = simple_api_get(
+      "https://www.stargatecommand.co/profile/#{id}?page=#{page}", cookies
     )
 
     case status_code do
@@ -141,15 +147,8 @@ defmodule SGC.StargateCommand do
   end
 
   def user_following(id, cookies, page \\ 1) do
-    cookies = cookies |> filter_cookies()
-
-    %Response{status_code: status_code, body: body, cookies: new_cookies} = get(
-      "https://www.stargatecommand.co/profile/#{id}/following?page=#{page}",
-      [
-        {"Accept", "application/json, text/javascript, */*; q=0.01"},
-        {"X-Requested-With", "XMLHttpRequest"}
-      ],
-      cookies
+    %Response{status_code: status_code, body: body, cookies: new_cookies} = simple_api_get(
+      "https://www.stargatecommand.co/profile/#{id}/following?page=#{page}", cookies
     )
 
     case status_code do
@@ -163,15 +162,8 @@ defmodule SGC.StargateCommand do
   end
 
   def user_followers(id, cookies, page \\ 1) do
-    cookies = cookies |> filter_cookies()
-
-    %Response{status_code: status_code, body: body, cookies: new_cookies} = get(
-      "https://www.stargatecommand.co/profile/#{id}/followers?page=#{page}",
-      [
-        {"Accept", "application/json, text/javascript, */*; q=0.01"},
-        {"X-Requested-With", "XMLHttpRequest"}
-      ],
-      cookies
+    %Response{status_code: status_code, body: body, cookies: new_cookies} = simple_api_get(
+      "https://www.stargatecommand.co/profile/#{id}/followers?page=#{page}", cookies
     )
 
     case status_code do
@@ -185,15 +177,8 @@ defmodule SGC.StargateCommand do
   end
 
   def user_notifications(cookies, page \\ 1) do
-    cookies = cookies |> filter_cookies()
-
-    %Response{status_code: status_code, body: body, cookies: new_cookies} = get(
-      "https://www.stargatecommand.co/notifications?page=#{page}",
-      [
-        {"Accept", "application/json, text/javascript, */*; q=0.01"},
-        {"X-Requested-With", "XMLHttpRequest"}
-      ],
-      cookies
+    %Response{status_code: status_code, body: body, cookies: new_cookies} = simple_api_get(
+      "https://www.stargatecommand.co/notifications?page=#{page}", cookies
     )
 
     case status_code do
@@ -207,15 +192,8 @@ defmodule SGC.StargateCommand do
   end
 
   def mark_user_notification_as_read(cookies, id) do
-    cookies = cookies |> filter_cookies()
-
-    %Response{status_code: status_code, cookies: new_cookies} = get(
-      "https://www.stargatecommand.co/notifications/mark_read?id=#{id}",
-      [
-        {"Accept", "application/json, text/javascript, */*; q=0.01"},
-        {"X-Requested-With", "XMLHttpRequest"}
-      ],
-      cookies
+    %Response{status_code: status_code, cookies: new_cookies} = simple_api_get(
+      "https://www.stargatecommand.co/notifications/mark_read?id=#{id}", cookies
     )
 
     case status_code do
@@ -229,15 +207,8 @@ defmodule SGC.StargateCommand do
   end
 
   def mark_all_user_notifications_as_read(cookies) do
-    cookies = cookies |> filter_cookies()
-
-    %Response{status_code: status_code, cookies: new_cookies} = get(
-      "https://www.stargatecommand.co/notifications/mark_all_read",
-      [
-        {"Accept", "application/json, text/javascript, */*; q=0.01"},
-        {"X-Requested-With", "XMLHttpRequest"}
-      ],
-      cookies
+    %Response{status_code: status_code, cookies: new_cookies} = simple_api_get(
+      "https://www.stargatecommand.co/notifications/mark_all_read", cookies
     )
 
     case status_code do
