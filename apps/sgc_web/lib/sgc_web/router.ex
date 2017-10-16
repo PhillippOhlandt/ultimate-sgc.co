@@ -58,6 +58,7 @@ defmodule SGCWeb.Router do
 
       scope "/discussions" do
         get "/", DiscussionController, :index
+        get "/mark_all_read", DiscussionController, :mark_all_read
       end
     end
   end
