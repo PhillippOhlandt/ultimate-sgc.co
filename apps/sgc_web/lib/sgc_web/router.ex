@@ -64,6 +64,7 @@ defmodule SGCWeb.Router do
       scope "/messages" do
         get "/", MessageController, :index
         get "/mark_all_read", MessageController, :mark_all_read
+        get "/:id", MessageController, :show
       end
     end
   end

@@ -5,6 +5,10 @@ defmodule SGCWeb.Api.MessageView do
     data
   end
 
+  def render("show.json", %{data: data}) do
+    data
+  end
+
   def render("mark_all_read.json", _) do
     %{}
   end
