@@ -265,4 +265,19 @@ defmodule SGC.StargateCommand do
       _ -> {:error, :unauthenticated}
     end
   end
+
+  def mark_all_user_messages_as_read(cookies) do
+    %Response{status_code: status_code, cookies: new_cookies} = simple_api_get(
+      "https://www.stargatecommand.co/messages/mark_all_read", cookies
+    )
+
+    case status_code do
+      200 ->
+        new_cookies = Cookie.merge_lists(cookies, new_cookies)
+
+        {:ok, new_cookies}
+      404 -> {:error, :not_found}
+      _ -> {:error, :unauthenticated}
+    end
+  end
 end
