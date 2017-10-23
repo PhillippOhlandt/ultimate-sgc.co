@@ -1,0 +1,7 @@
+export POSTGRES_USER=sgc
+export POSTGRES_PASSWORD=secret
+export POSTGRES_HOSTNAME=localhost
+export POSTGRES_PORT=5432
+
+export PORT=4444
+export COOKIE_SIGNING_SALT=abcdefgh
