@@ -2,6 +2,7 @@ defmodule SGC.StargateCommand do
   alias SGC.StargateCommand.Response
   alias SGC.Cookie
   alias SGC.StargateCommand.Scraper.Profile
+  alias SGC.StargateCommand.Messages.UserMessageInput
 
   def get(url, headers \\ [], cookies \\ nil) do
     request(:get, url, nil, headers, cookies)
@@ -132,6 +133,8 @@ defmodule SGC.StargateCommand do
   def user_info(id, cookies), do: user_info("/profile/#{id}", cookies)
 
   def user_posts(id, cookies, page \\ 1) do
+    cookies = cookies |> filter_cookies()
+
     %Response{status_code: status_code, body: body, cookies: new_cookies} = simple_api_get(
       "https://www.stargatecommand.co/profile/#{id}?page=#{page}", cookies
     )
@@ -147,6 +150,8 @@ defmodule SGC.StargateCommand do
   end
 
   def user_following(id, cookies, page \\ 1) do
+    cookies = cookies |> filter_cookies()
+
     %Response{status_code: status_code, body: body, cookies: new_cookies} = simple_api_get(
       "https://www.stargatecommand.co/profile/#{id}/following?page=#{page}", cookies
     )
@@ -162,6 +167,8 @@ defmodule SGC.StargateCommand do
   end
 
   def user_followers(id, cookies, page \\ 1) do
+    cookies = cookies |> filter_cookies()
+
     %Response{status_code: status_code, body: body, cookies: new_cookies} = simple_api_get(
       "https://www.stargatecommand.co/profile/#{id}/followers?page=#{page}", cookies
     )
@@ -177,6 +184,8 @@ defmodule SGC.StargateCommand do
   end
 
   def user_notifications(cookies, page \\ 1) do
+    cookies = cookies |> filter_cookies()
+
     %Response{status_code: status_code, body: body, cookies: new_cookies} = simple_api_get(
       "https://www.stargatecommand.co/notifications?page=#{page}", cookies
     )
@@ -192,6 +201,8 @@ defmodule SGC.StargateCommand do
   end
 
   def mark_user_notification_as_read(cookies, id) do
+    cookies = cookies |> filter_cookies()
+
     %Response{status_code: status_code, cookies: new_cookies} = simple_api_get(
       "https://www.stargatecommand.co/notifications/mark_read?id=#{id}", cookies
     )
@@ -207,6 +218,8 @@ defmodule SGC.StargateCommand do
   end
 
   def mark_all_user_notifications_as_read(cookies) do
+    cookies = cookies |> filter_cookies()
+
     %Response{status_code: status_code, cookies: new_cookies} = simple_api_get(
       "https://www.stargatecommand.co/notifications/mark_all_read", cookies
     )
@@ -222,6 +235,8 @@ defmodule SGC.StargateCommand do
   end
 
   def user_discussions(cookies, page \\ 1) do
+    cookies = cookies |> filter_cookies()
+
     %Response{status_code: status_code, body: body, cookies: new_cookies} = simple_api_get(
       "https://www.stargatecommand.co/discussions?page=#{page}", cookies
     )
@@ -237,6 +252,8 @@ defmodule SGC.StargateCommand do
   end
 
   def mark_all_user_discussions_as_read(cookies) do
+    cookies = cookies |> filter_cookies()
+
     %Response{status_code: status_code, cookies: new_cookies} = simple_api_get(
       "https://www.stargatecommand.co/discussions/mark_all_read", cookies
     )
@@ -252,6 +269,8 @@ defmodule SGC.StargateCommand do
   end
 
   def user_messages(cookies, page \\ 1) do
+    cookies = cookies |> filter_cookies()
+
     %Response{status_code: status_code, body: body, cookies: new_cookies} = simple_api_get(
       "https://www.stargatecommand.co/messages?page=#{page}", cookies
     )
@@ -267,6 +286,8 @@ defmodule SGC.StargateCommand do
   end
 
   def user_message(id, cookies) do
+    cookies = cookies |> filter_cookies()
+
     %Response{status_code: status_code, body: body, cookies: new_cookies} = simple_api_get(
       "https://www.stargatecommand.co/messages/#{id}", cookies
     )
@@ -281,7 +302,52 @@ defmodule SGC.StargateCommand do
     end
   end
 
+  def validate_user_message_input(params) do
+    changeset = UserMessageInput.changeset(%UserMessageInput{}, params)
+
+    case changeset.valid? do
+      true ->
+        {:ok, Ecto.Changeset.apply_changes(changeset)}
+      false ->
+        {:error, changeset}
+    end
+  end
+
+  def send_user_message(id, %UserMessageInput{} = message, cookies) do
+    cookies = cookies |> filter_cookies()
+
+    %Response{body: body, cookies: new_cookies} = get("https://www.stargatecommand.co/activities", [], cookies)
+
+    [{"meta", [{"name", "csrf-token"}, {"content", csrf_token}], []}] = Floki.find(body, "meta[name=csrf-token]")
+
+    new_cookies = Cookie.merge_lists(cookies, new_cookies)
+
+    content = {:multipart, [{"recipient_uuid", id} | UserMessageInput.request_data(message)]}
+
+    %Response{status_code: status_code, body: body, cookies: new_cookies} = post(
+      "https://www.stargatecommand.co/messages/",
+      content,
+      [
+        {"Accept", "application/json, text/javascript, */*; q=0.01"},
+        {"X-Requested-With", "XMLHttpRequest"},
+        {"X-CSRF-Token", csrf_token}
+      ],
+      new_cookies
+    )
+
+    case status_code do
+      200 ->
+        new_cookies = Cookie.merge_lists(cookies, new_cookies)
+
+        {:ok, Poison.decode!(body), new_cookies}
+      404 -> {:error, :not_found}
+      _ -> {:error, :unauthenticated}
+    end
+  end
+
   def mark_all_user_messages_as_read(cookies) do
+    cookies = cookies |> filter_cookies()
+
     %Response{status_code: status_code, cookies: new_cookies} = simple_api_get(
       "https://www.stargatecommand.co/messages/mark_all_read", cookies
     )

@@ -23,6 +23,18 @@ defmodule SGCWeb.Api.MessageController do
     end
   end
 
+  def store(conn, %{"id" => id} = params) do
+    cookies = create_cookie_list(conn)
+
+    with {:ok, message} <- StargateCommand.validate_user_message_input(params),
+         {:ok, data, new_cookies} <- StargateCommand.send_user_message(id, message, cookies) do
+
+      conn
+      |> add_cookies(new_cookies)
+      |> render("store.json", data: data)
+    end
+  end
+
   def mark_all_read(conn, _) do
     cookies = create_cookie_list(conn)
 
