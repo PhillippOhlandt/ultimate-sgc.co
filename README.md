@@ -3,7 +3,7 @@
 ## Dev Setup
 
 Requirements:
-- Elixir
+- Elixir 1.5 or higher
 - Postgres
 - NodeJS/NPM (for frontend assets)
 - [direnv (optional)](https://direnv.net/)
