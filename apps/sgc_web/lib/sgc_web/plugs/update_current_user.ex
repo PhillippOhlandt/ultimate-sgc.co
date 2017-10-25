@@ -4,6 +4,7 @@ defmodule SGCWeb.Plugs.UpdateCurrentUser do
   """
 
   import Plug.Conn
+  import Phoenix.Controller, only: [put_flash: 3, redirect: 2]
   import SGCWeb.Session, only: [current_user: 1]
   import SGCWeb.Controllers.Helpers
   alias SGC.StargateCommand
@@ -32,12 +33,21 @@ defmodule SGCWeb.Plugs.UpdateCurrentUser do
 
   def fetch_data_and_assign(conn, id) do
     cookies = create_cookie_list(conn)
-    {:ok, user_data, _} = StargateCommand.user_info(id, cookies)
 
-    user_data = Map.put(user_data, :updated_at, DateTime.utc_now())
+    case StargateCommand.user_info(id, cookies) do
+      {:ok, user_data, _} ->
+        user_data = Map.put(user_data, :updated_at, DateTime.utc_now())
 
-    conn
-    |> put_session(:current_user, user_data)
-    |> assign(:current_user, user_data)
+        conn
+        |> put_session(:current_user, user_data)
+        |> assign(:current_user, user_data)
+      {:error, :unauthenticated} ->
+        conn
+        |> put_session(:current_user, nil)
+        |> assign(:current_user, nil)
+        |> put_flash(:info, "Your session expired, please log in again")
+        |> redirect(to: SGCWeb.Router.Helpers.session_path(conn, :new))
+        |> halt()
+    end
   end
 end

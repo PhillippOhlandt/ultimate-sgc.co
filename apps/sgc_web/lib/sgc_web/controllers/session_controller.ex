@@ -33,7 +33,7 @@ defmodule SGCWeb.SessionController do
 
   def delete(conn, _params) do
     conn
-    |> configure_session(drop: true)
+    |> put_session(:current_user, nil)
     |> put_flash(:info, "See you later!")
     |> redirect(to: page_path(conn, :index))
   end
