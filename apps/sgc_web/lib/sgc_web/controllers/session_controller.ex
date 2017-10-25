@@ -16,6 +16,8 @@ defmodule SGCWeb.SessionController do
       {:ok, cookies} ->
         {:ok, user_data, cookies} = StargateCommand.user_info(cookies)
 
+        user_data = Map.put(user_data, :updated_at, DateTime.utc_now())
+
         conn
         |> add_cookies(cookies)
         |> put_session(:current_user, user_data)
