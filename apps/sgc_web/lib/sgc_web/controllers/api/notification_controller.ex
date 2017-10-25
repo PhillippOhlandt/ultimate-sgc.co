@@ -2,6 +2,8 @@ defmodule SGCWeb.Api.NotificationController do
   use SGCWeb, :controller
   alias SGC.StargateCommand
 
+  action_fallback SGCWeb.FallbackController
+
   def index(conn, params) do
     cookies = create_cookie_list(conn)
     page = Map.get(params, "page", 1)
@@ -10,6 +12,8 @@ defmodule SGCWeb.Api.NotificationController do
       conn
       |> add_cookies(new_cookies)
       |> render("index.json", data: data)
+    else
+      value -> {:json, value}
     end
   end
 
@@ -20,6 +24,8 @@ defmodule SGCWeb.Api.NotificationController do
       conn
       |> add_cookies(new_cookies)
       |> render("mark_read.json")
+    else
+      value -> {:json, value}
     end
   end
 
@@ -30,6 +36,8 @@ defmodule SGCWeb.Api.NotificationController do
       conn
       |> add_cookies(new_cookies)
       |> render("mark_all_read.json")
+    else
+      value -> {:json, value}
     end
   end
 end

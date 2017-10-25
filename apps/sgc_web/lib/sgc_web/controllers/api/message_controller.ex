@@ -2,6 +2,8 @@ defmodule SGCWeb.Api.MessageController do
   use SGCWeb, :controller
   alias SGC.StargateCommand
 
+  action_fallback SGCWeb.FallbackController
+
   def index(conn, params) do
     cookies = create_cookie_list(conn)
     page = Map.get(params, "page", 1)
@@ -10,6 +12,8 @@ defmodule SGCWeb.Api.MessageController do
       conn
       |> add_cookies(new_cookies)
       |> render("index.json", data: data)
+    else
+      value -> {:json, value}
     end
   end
 
@@ -20,6 +24,8 @@ defmodule SGCWeb.Api.MessageController do
       conn
       |> add_cookies(new_cookies)
       |> render("show.json", data: data)
+    else
+      value -> {:json, value}
     end
   end
 
@@ -32,6 +38,8 @@ defmodule SGCWeb.Api.MessageController do
       conn
       |> add_cookies(new_cookies)
       |> render("store.json", data: data)
+    else
+      value -> {:json, value}
     end
   end
 
@@ -42,6 +50,8 @@ defmodule SGCWeb.Api.MessageController do
       conn
       |> add_cookies(new_cookies)
       |> render("mark_all_read.json")
+    else
+      value -> {:json, value}
     end
   end
 end

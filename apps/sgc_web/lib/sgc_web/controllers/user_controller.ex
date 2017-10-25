@@ -2,6 +2,8 @@ defmodule SGCWeb.UserController do
   use SGCWeb, :controller
   alias SGC.StargateCommand
 
+  action_fallback SGCWeb.FallbackController
+
   def show(conn, %{"id" => id}) do
     cookies = create_cookie_list(conn)
 
@@ -21,6 +23,8 @@ defmodule SGCWeb.UserController do
       |> add_cookies(new_cookies)
       |> put_view(SGCWeb.PostView)
       |> render("posts.json", data: data)
+    else
+      value -> {:json, value}
     end
   end
 
@@ -32,6 +36,8 @@ defmodule SGCWeb.UserController do
       conn
       |> add_cookies(new_cookies)
       |> render("following.json", data: data)
+    else
+      value -> {:json, value}
     end
   end
 
@@ -43,6 +49,8 @@ defmodule SGCWeb.UserController do
       conn
       |> add_cookies(new_cookies)
       |> render("followers.json", data: data)
+    else
+      value -> {:json, value}
     end
   end
 end

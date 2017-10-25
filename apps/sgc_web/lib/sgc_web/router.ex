@@ -8,7 +8,7 @@ defmodule SGCWeb.Router do
 #    plug :protect_from_forgery #@TODO: Add back once we have some sort of frontend
     plug :put_secure_browser_headers
     plug SGCWeb.Plugs.CurrentUser
-    plug SGCWeb.Plugs.UpdateCurrentUser
+#    plug SGCWeb.Plugs.UpdateCurrentUser
   end
 
   pipeline :api do
