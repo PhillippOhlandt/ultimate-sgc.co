@@ -19,15 +19,17 @@ defmodule SGCWeb.FallbackController do
     conn
     |> put_status(:unauthorized)
     |> put_resp_header("content-type", "application/json")
+    |> put_session(:current_user, nil)
+    |> assign(:current_user, nil)
     |> put_view(ErrorView)
     |> render("error.json", error: "unauthorized")
   end
 
-  def call(conn, {:html, value}) do
+  def call(_conn, {:html, value}) do
     value
   end
 
-  def call(conn, {:json, value}) do
+  def call(_conn, {:json, value}) do
     value
   end
 
